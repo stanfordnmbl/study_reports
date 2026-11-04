@@ -1,0 +1,40 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        // {
+        //     "name": "Python Debugger: Current File with Arguments",
+        //     "type": "debugpy",
+        //     "request": "launch",
+        //     "program": "${file}",
+        //     "console": "integratedTerminal",
+        //     "args": ["--backend", 
+        //              "./opensim-viewer/src/backend",
+        //              "--geom",
+        //              "./opensim-viewer/src/backend/backend/Geometry",
+        //              "./ID119/opensim/LaiUhlrich2022_KA_scaled.osim", 
+        //              "./ID119/opensim/rc_l1_trimmed.mot",
+        //              "./ID119/opensim/rc_l1_grf.mot",
+        //              "--force", 
+        //              "./ID119/out"]
+        // },
+        {
+            "name": "Python Debugger: Current File with Arguments",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "args": ["--build", 
+                     "./opensim-viewer/build",
+                     "--work",
+                     "ID119/work",
+                     "--out-dir",
+                     "ID119/movies",
+                     "--convert-cmd",
+                     ".venv/Scripts/python convert_stage.py --backend ./opensim-viewer/src/backend {model_path} {motion_path} {force_path} --force {viewer_file}",
+                     "subject.yaml"]
+        }
+    ]
+}

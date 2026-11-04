@@ -1,0 +1,29 @@
+# OpenSim report workflow: manifest -> plots (.sto) + movies (.mot) -> HTML
+# Setup (Windows PowerShell):
+#   py -3.11 -m venv .venv ; .\.venv\Scripts\Activate.ps1
+#   pip install -r requirements.txt
+#   playwright install chromium
+#   ffmpeg must also be on PATH (winget install Gyan.FFmpeg)
+
+# --- convert stage: opensim-viewer backend (osimConverters) -------------------------------
+opensim==4.6            # PyPI wheel. If pip finds no wheel for your Python version, use a
+                        # different Python (try 3.10-3.12) or the conda opensim-org channel
+pygltflib>=1.16         # writes the glTF in osimConverters
+numpy>=1.26             # if `import opensim` complains about numpy 2.x, pin numpy<2
+ezc3d>=1.5              # osimConverters/__init__.py imports the C3D converter eagerly, so its
+                        # dependencies must exist even though this workflow never converts C3D.
+                        # Confirm against convertC3D2Gltf.py; an ImportError will name any other missing module
+
+# --- movie stage: drive the viewer headlessly --------------------------------------------
+playwright>=1.49        # then run: playwright install chromium
+
+# --- plots, summary, HTML report ---------------------------------------------------------
+pandas>=2.2
+matplotlib>=3.9
+jinja2>=3.1
+pyyaml>=6.0             # manifest
+pydantic>=2.7           # manifest validation
+typer>=0.12             # CLI
+pyarrow>=15             # optional: parquet cache of parsed .sto/.mot tables
+
+# Not needed here: boto3 / requests are only used by lambda_function.py (the AWS wrapper)
