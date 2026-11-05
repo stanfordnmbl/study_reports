@@ -82,8 +82,9 @@ def main() -> int:
     a = ap.parse_args()
 
     manifest_path = Path(a.manifest).resolve()
-    base = manifest_path.parent
+
     cfg = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    base = Path(cfg["subject_dir"]).resolve()
     model = resolve(base, cfg["model"])
     if not model.is_file():
         sys.exit(f"Model not found: {model}")
@@ -146,11 +147,55 @@ def main() -> int:
     finally:
         server.shutdown()
 
+    # Extract numbers from metrics file to be included in the summary
+    metrics_list = cfg["metrics"]
+    out = {}
+    try:
+        for metric in metrics_list:
+            metric_file = resolve(base, metric.get("file"))
+            if metric_file and metric_file.is_file():
+                with open(metric_file, 'r') as f:
+                    lines = f.readlines()
+                    if len(lines) > 1:
+                        side = "left"
+                        out[side] = {}
+                        header = lines[0].strip().split(',')
+                        values = lines[1].strip().split(',')
+                        metric_data = dict(zip(header, values))
+                         # print(f"\n--- {metric.get('label', metric.get('name'))} ---")
+                        indx = 0
+                        for key, value in metric_data.items():
+                            # print(f"{key}: {value}")
+                            if key in metric.get("columnLabels", []):
+                                value = float(value)
+                                unit = metric.get("unit", "")
+                                print(f"Found key, Value: {key}: {value} {unit}")
+                                out[side][key] = value
+                                indx += 1
+                        # repeat for lines[2] if it exists
+                        if len(lines) > 2:
+                            side = "right"
+                            out[side] = {}
+                            values2 = lines[2].strip().split(',')
+                            metric_data2 = dict(zip(header, values2))
+                            indx = 0
+                            for key, value in metric_data2.items():
+                                if key in metric.get("columnLabels", []):
+                                    value = float(value)
+                                    unit = metric.get("unit", "")
+                                    print(f"Found key, Value: {key}: {value} {unit}")
+                                    out[side][key] = value
+                                    indx += 1
+        yaml_output_path = base / "metrics_summary.yaml"
+        with open(yaml_output_path, 'w') as yaml_file:
+            yaml.dump(out, yaml_file)
+        print(f"\nMetrics summary written to {yaml_output_path}")
+    except Exception as e:
+        print(f"Error occurred while processing metrics: {e}")
     print("\n--- summary ---")
     for label, status, detail in results:
         print(f"{status:7} {label}: {detail}")
     return 0 if all(s == "OK" for _, s, _ in results) else 1
-
 
 if __name__ == "__main__":
     sys.exit(main())
