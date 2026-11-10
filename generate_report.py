@@ -10,6 +10,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+import base64, mimetypes, re
 
 import yaml
 
@@ -30,6 +31,29 @@ def flatten(d, parent="", sep="."):
             out[key] = v
     return out
 
+def to_data_uri(path: Path) -> str:
+    mime = mimetypes.guess_type(path.name)[0] or "application/octet-stream"
+    return f"data:{mime};base64,{base64.b64encode(path.read_bytes()).decode('ascii')}"
+
+def embed_media(html_path, out_path=None):
+    html_path = Path(html_path)
+    base_dir = html_path.parent
+
+    def embed(match):
+        key, rel = match.group(1), match.group(2)
+        file = base_dir / rel
+        if not file.exists():
+            print(f"missing, left as-is: {rel}")
+            return match.group(0)
+        return f'{key}:"{to_data_uri(file)}"'
+
+    html = html_path.read_text(encoding="utf-8")
+    html = re.sub(r'\b(src):"(movies/[^"]+)"', embed, html)
+
+    out_path = Path(out_path) if out_path else html_path.with_name(html_path.stem + "_embedded.html")
+    out_path.write_text(html, encoding="utf-8")
+    return out_path
+
 if __name__ == "__main__":
     import argparse
 
@@ -49,6 +73,7 @@ if __name__ == "__main__":
     # now run the script run_manifest_movies.py to generate the movies and metrics_summary
     # pass in 
     print(subject_path)
+    repo_root = Path(__file__).parent
     subprocess.run(
         [sys.executable, 
          str(Path(__file__).with_name("run_manifest_movies.py")),
@@ -85,15 +110,5 @@ if __name__ == "__main__":
 
     # Now the report should be fully generated in the subject folder
     # run a command to embed the movies into the report
-    # movies_dir = subject_path / "movies"
-    # if movies_dir.is_dir():
-    #     for movie in movies_dir.glob("*.mp4"):
-    #         report_html_path = subject_path / "smart_study_report.html"
-    #         with open(report_html_path, 'r') as f:
-    #             report_html = f.read()
-    #         report_html = report_html.replace(
-    #             f"{{{{movie_{movie.stem}}}}}",
-    #             f'<video controls src="{movie.name}"></video>'
-    #         )
-    #         with open(report_html_path, 'w') as f:
-    #             f.write(report_html)
+    embed_media(subject_path / "smart_study_report.html")
+
