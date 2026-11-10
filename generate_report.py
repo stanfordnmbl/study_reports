@@ -20,6 +20,16 @@ def _sha(paths, extra: str = "") -> str:
         h.update(Path(p).read_bytes())
     return h.hexdigest()[:12]
 
+def flatten(d, parent="", sep="."):
+    out = {}
+    for k, v in d.items():
+        key = f"{parent}{sep}{k}" if parent else str(k)
+        if isinstance(v, dict):
+            out.update(flatten(v, key, sep))
+        else:
+            out[key] = v
+    return out
+
 if __name__ == "__main__":
     import argparse
 
@@ -59,28 +69,31 @@ if __name__ == "__main__":
     # copy the values from metrics_summary into subject_folder/smart_study_report.html
     metrics_summary_path = subject_path / "metrics_summary.yaml"
     if metrics_summary_path.is_file():
-        with open(metrics_summary_path, 'r') as f:
-            metrics_summary = yaml.safe_load(f)
         report_html_path = subject_path / "smart_study_report.html"
         with open(report_html_path, 'r') as f:
             report_html = f.read()
         report_html = report_html.replace("ParticipantID", subject_path.name)
-        for key, value in metrics_summary.items():
+        with open(metrics_summary_path) as f:
+            data = yaml.safe_load(f)
+
+        flat = flatten(data)
+        for key, value in flat.items():
+            print(key, value)
             report_html = report_html.replace(f"{{{{{key}}}}}", str(value))
         with open(report_html_path, 'w') as f:
             f.write(report_html)
 
     # Now the report should be fully generated in the subject folder
     # run a command to embed the movies into the report
-    movies_dir = subject_path / "movies"
-    if movies_dir.is_dir():
-        for movie in movies_dir.glob("*.mp4"):
-            report_html_path = subject_path / "smart_study_report.html"
-            with open(report_html_path, 'r') as f:
-                report_html = f.read()
-            report_html = report_html.replace(
-                f"{{{{movie_{movie.stem}}}}}",
-                f'<video controls src="{movie.name}"></video>'
-            )
-            with open(report_html_path, 'w') as f:
-                f.write(report_html)
+    # movies_dir = subject_path / "movies"
+    # if movies_dir.is_dir():
+    #     for movie in movies_dir.glob("*.mp4"):
+    #         report_html_path = subject_path / "smart_study_report.html"
+    #         with open(report_html_path, 'r') as f:
+    #             report_html = f.read()
+    #         report_html = report_html.replace(
+    #             f"{{{{movie_{movie.stem}}}}}",
+    #             f'<video controls src="{movie.name}"></video>'
+    #         )
+    #         with open(report_html_path, 'w') as f:
+    #             f.write(report_html)

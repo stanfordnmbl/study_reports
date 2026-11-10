@@ -92,18 +92,18 @@
    Values below are PLACEHOLDERS. Metric keys match the study output columns.
    video: path to MP4 (and optional poster PNG for PDF export). */
 const DATA = {
-  participant: "Participant ID (ID119)",
+  participant: "Participant ID (ParticipantID)",
   videos: {
     drop: [{label:"Right leg", side:"r", src:"movies/single_leg_drop_jump_right.mp4", poster:"movies/single_leg_drop_jump_right.jpg"}, {label:"Left leg", side:"l", src:"movies/single_leg_drop_jump_left.mp4", poster:"movies/single_leg_drop_jump_left.jpg"}],
     cut:  [{label:"Run cut: right cut", side:"r", src:"movies/run_cut_right.mp4", poster:"movies/run_cut_right.jpg"}, {label:"Run cut: left cut", side:"l", src:"movies/run_cut_left.mp4", poster:"movies/run_cut_left.jpg"}]
   },
   metrics: {
     jump: {title:"Jump height", unit:"m", key:"jump_height_from_takeoff_m", dec:2, higher:true,
-           R:{v:0.21, mean:0.24, sd:0.05}, L:{v:0.26, mean:0.24, sd:0.05}},
+           R:{v:{{right.jump_height_from_takeoff_m}}, mean:0.24, sd:0.05}, L:{v:{{left.jump_height_from_takeoff_m}}, mean:0.24, sd:0.05}},
     gct:  {title:"Ground contact time", unit:"s", key:"ground_contact_time_s", dec:2, higher:false,
-           R:{v:0.31, mean:0.28, sd:0.04}, L:{v:0.26, mean:0.28, sd:0.04}},
+           R:{v:{{right.ground_contact_time_s}}, mean:0.28, sd:0.04}, L:{v:{{left.ground_contact_time_s}}, mean:0.28, sd:0.04}},
     rsi:  {title:"RSI", unit:"m/s", key:"rsi_from_takeoff", dec:2, higher:true,
-           R:{v:0.68, mean:0.88, sd:0.20}, L:{v:1.00, mean:0.88, sd:0.20}},
+           R:{v:{{right.rsi_from_takeoff}}, mean:0.88, sd:0.20}, L:{v:{{left.rsi_from_takeoff}}, mean:0.88, sd:0.20}},
     cut:  {title:"Run cut time", unit:"s", key:"cut_time_s", dec:2, higher:false,
            R:{v:1.62, mean:1.55, sd:0.12}, L:{v:1.49, mean:1.55, sd:0.12}}
   }
