@@ -84,7 +84,7 @@ def main() -> int:
     manifest_path = Path(a.manifest).resolve()
 
     cfg = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
-    base = Path(cfg["subject_dir"]).resolve()
+    base = manifest_path.parent
     model = resolve(base, cfg["model"])
     if not model.is_file():
         sys.exit(f"Model not found: {model}")
