@@ -85,7 +85,7 @@ if __name__ == "__main__":
          "--out-dir",
          str(subject_path / "movies"),
          "--convert-cmd",
-         f"D:\\dev\\src\\report_fresh\\study_reports\\.venv\\Scripts\\python {Path(__file__).parent / 'convert_stage.py'} --backend D:\\dev\\src\\report_fresh\\study_reports\\vendors\\opensim-viewer-backend {{model_path}} {{motion_path}} {{force_path}} {{viewer_file}}"],
+         f"{Path(__file__).parent / '.venv' / 'Scripts' / 'python'} {Path(__file__).parent / 'convert_stage.py'} --backend {Path(__file__).parent / 'vendors' / 'opensim-viewer-backend'} {{model_path}} {{motion_path}} {{force_path}} {{viewer_file}}"],
         cwd=subject_path,
         check=True,
     )
