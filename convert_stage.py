@@ -38,7 +38,10 @@ osim_path, mot_path, force_mot_path, out_path = sys.argv[1:5]
 geom_dirs = sys.argv[5:]
 for d in geom_dirs[1:]:
     osim.ModelVisualizer.addDirToGeometrySearchPaths(d)
-gltf = convertOsim2Gltf(osim_path, geom_dirs[0] if geom_dirs else '', [mot_path])
+options = osimViewerOptions()
+options.setShowMarkers(False)
+options.setShowMuscles(False)
+gltf = convertOsim2Gltf(osim_path, geom_dirs[0] if geom_dirs else '', [mot_path], options)
 gltf = convertForceFileToGltf(force_mot_path, None, gltf)
 gltf.save(out_path)
 """

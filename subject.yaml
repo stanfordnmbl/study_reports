@@ -1,6 +1,3 @@
-viewer:
-  url: https://opensim-viewer-git-headless-ayman-habib-s-projects.vercel.app # http://localhost:3000
-subject_dir: ID119
 model: opensim/LaiUhlrich2022_KA_scaled.osim       # or built dist/ path the tool serves itself
 motions:
   - motion_path: opensim/rc_l1_trimmed.mot
@@ -16,13 +13,13 @@ motions:
   - motion_path: opensim/sdj_l1_trimmed.mot
     force_path: opensim/sdj_l1_grf.mot
     label: Single Leg Drop Jump left
-    size: [1280, 720]
+    size: [720, 1280]
     camera: rc                 # presets implemented in the viewer's capture hook
   - motion_path: opensim/sdj_r1_trimmed.mot
     force_path: opensim/sdj_r1_grf.mot
     label: Single Leg Drop Jump right
     fps: 60
-    size: [1280, 720]
+    size: [720, 1280]
     camera: lc                 # presets implemented in the viewer's capture hook
 metrics:
   - name: sldj_metrics
